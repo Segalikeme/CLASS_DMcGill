@@ -5579,7 +5579,7 @@ int perturbations_initial_conditions(struct precision * ppr,
 
       if (pba->has_ddm == _TRUE_) {
         ppw->pv->y[ppw->pv->index_pt_delta_ddm] = 3./4.*ppw->pv->y[ppw->pv->index_pt_delta_g]; /* ddm density */
-        /* need to add the bulk velocity equation */
+        ppw->pv->y[ppw->pv->index_pt_theta_ddm] = 
 
       }
 
@@ -8212,7 +8212,7 @@ int perturbations_print_variables(double tau,
   double delta_idm=0., theta_idm=0.;
   double delta_dcdm=0.,theta_dcdm=0.;
   double delta_dr=0.,theta_dr=0.,shear_dr=0., f_dr=1.0;
-  double delta_ddm=0.,theta_ddm=0.,shear_ddm=0., f_ddm=1.0;
+  double delta_ddm=0.,theta_ddm=0., f_ddm=1.0;
   double delta_ur=0.,theta_ur=0.,shear_ur=0.,l4_ur=0.;
   double delta_idr=0., theta_idr=0., shear_idr=0.;
   double delta_rho_scf=0., rho_plus_p_theta_scf=0.;

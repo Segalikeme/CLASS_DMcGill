@@ -3182,7 +3182,7 @@ int input_read_parameters_species(struct file_content * pfc,
   }
 
   /** 7.1.2) Decaying DM into DM */
-  /** 7.1.2.a) Omega_0_dcdmddn (DCDM, i.e. decaying CDM) */
+  /** 7.1.2.a) Omega_0_dcdmddm (DCDM, i.e. decaying CDM) */
   /* Read */
   class_call(parser_read_double(pfc,"Omega_dcdmddm",&param1,&flag1,errmsg),
              errmsg,
