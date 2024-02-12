@@ -3259,6 +3259,27 @@ int input_read_parameters_species(struct file_content * pfc,
     Omega_m_remaining-= pba->Omega0_dcdmddm;
   }
 
+  if (pba->Omega0_dcdmddm > 0 || (pba->Omega_ini_dcdm > 0.)) {
+
+    /** 7.1.2.d) Energy ratio for the decay (as a unitless fraction)*/
+    /* Read */
+    class_call(parser_read_double(pfc,"ratio_E",&param1,&flag1,errmsg),                         
+               errmsg,
+               errmsg);
+    /* Complete set of parameters */
+    if (flag1 == _TRUE_){
+      pba->ratio_E = param1;                                                          
+    }
+    /* Test */
+    class_test(pba->ratio_E<0.,
+               errmsg,
+               "You need to enter an energy for the decaying DM 'ratio_E > 0.'");
+  }
+  if (has_m_budget == _TRUE_) {
+    class_test(Omega_m_remaining < pba->Omega0_dcdmddm, errmsg, "Too much energy density from massive species. At this point only %e is left for Omega_m, but requested 'Omega_dcdmddm = %e'",Omega_m_remaining, pba->Omega0_dcdmddm);
+    Omega_m_remaining-= pba->Omega0_dcdmddm;
+  }
+
   /** 7.2) Multi-interacting dark matter (idm) */
   /** 7.2.1) Global parameters for all interacting Dark Matter components */
 
@@ -6254,6 +6275,8 @@ int input_default_params(struct background *pba,
   /** 7.1.2.c) Decay constant */
   pba->Gamma_dcdm = 0.0;
   pba->tau_dcdm = 0.0;
+  /** 7.1.2.d) Energy ratio */
+  pba->ratio_E = 0.0;
 
   /** 7.2) Interacting Dark Matter */
   /** 7.2.1.a) Current factional density of idm */
