@@ -534,7 +534,7 @@ int input_shooting(struct file_content * pfc,
   /* array of corresponding parameters that must be adjusted in order to meet the target (= unknown parameters) */
   char * const unknown_namestrings[] = {"h",                        /* unknown param for target '100*theta_s' */
                                         "h",                        /* unknown param for target 'theta_s_100' */
-                                        "Omega_ini_dcdm",           /* unknown param for target 'Omega_dcdmd' or 'Omega_dcdmddm' */
+                                        "Omega_ini_dcdm",           /* unknown param for target 'Omega_dcdmdr' or 'Omega_dcdmddm' */
                                         "omega_ini_dcdm",           /* unknown param for target 'omega_dcdmdr' or 'Omega_dcdmddm' */
                                         "scf_shooting_parameter",   /* unknown param for target 'Omega_scf' */
                                         "Omega_dcdmdr",             /* unknown param for target 'Omega_ini_dcdm' */
@@ -3225,12 +3225,15 @@ int input_read_parameters_species(struct file_content * pfc,
 
   if (pba->Omega0_dcdmddm > 0 || (pba->Omega_ini_dcdm > 0.)) {
 
-    /** 7.1.2.c) Gamma in same units as H0, i.e. km/(s Mpc)*/
+    /** 7.1.2.c) Gamma in same units as H0, i.e. km/(s Mpc) and energy ratio*/
     /* Read */
     class_call(parser_read_double(pfc,"Gamma_dcdm",&param1,&flag1,errmsg),                          // [km/(s Mpc)]
                errmsg,
                errmsg);
     class_call(parser_read_double(pfc,"tau_dcdm",&param2,&flag2,errmsg),                            // [s]
+               errmsg,
+               errmsg);
+    class_call(parser_read_double(pfc,"ratio_E",&param3,&flag3,errmsg),                         
                errmsg,
                errmsg);
     /* Test */
@@ -3246,6 +3249,9 @@ int input_read_parameters_species(struct file_content * pfc,
       pba->Gamma_dcdm = _Mpc_over_m_/(param2*_c_);                                                  // [Mpc]
       pba->tau_dcdm = param2;                                                                       // [s]
     }
+    if (flag3 == _TRUE_){
+      pba->ratio_E = param3;                                                          
+    }
     /* Test */
     class_test(pba->tau_dcdm<0.,
                errmsg,
@@ -3253,27 +3259,9 @@ int input_read_parameters_species(struct file_content * pfc,
     class_test(pba->Gamma_dcdm<0.,
                errmsg,
                "You need to enter a decay constant for the decaying DM 'Gamma_dcdm > 0.'");
-  }
-  if (has_m_budget == _TRUE_) {
-    class_test(Omega_m_remaining < pba->Omega0_dcdmddm, errmsg, "Too much energy density from massive species. At this point only %e is left for Omega_m, but requested 'Omega_dcdmddm = %e'",Omega_m_remaining, pba->Omega0_dcdmddm);
-    Omega_m_remaining-= pba->Omega0_dcdmddm;
-  }
-
-  if (pba->Omega0_dcdmddm > 0 || (pba->Omega_ini_dcdm > 0.)) {
-
-    /** 7.1.2.d) Energy ratio for the decay (as a unitless fraction)*/
-    /* Read */
-    class_call(parser_read_double(pfc,"ratio_E",&param1,&flag1,errmsg),                         
-               errmsg,
-               errmsg);
-    /* Complete set of parameters */
-    if (flag1 == _TRUE_){
-      pba->ratio_E = param1;                                                          
-    }
-    /* Test */
     class_test(pba->ratio_E<0.,
                errmsg,
-               "You need to enter an energy for the decaying DM 'ratio_E > 0.'");
+               "You need to enter an energy ratio for the decaying DM 'ratio_E > 0.'");
   }
   if (has_m_budget == _TRUE_) {
     class_test(Omega_m_remaining < pba->Omega0_dcdmddm, errmsg, "Too much energy density from massive species. At this point only %e is left for Omega_m, but requested 'Omega_dcdmddm = %e'",Omega_m_remaining, pba->Omega0_dcdmddm);
@@ -3693,6 +3681,7 @@ int input_read_parameters_species(struct file_content * pfc,
   Omega_tot += pba->Omega0_ur;
   Omega_tot += pba->Omega0_cdm;
   Omega_tot += pba->Omega0_idm;
+  Omega_tot += pba->Omega0_dcdmddm;
   Omega_tot += pba->Omega0_dcdmdr;
   Omega_tot += pba->Omega0_idr;
   Omega_tot += pba->Omega0_ncdm_tot;

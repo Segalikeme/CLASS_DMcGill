@@ -1,5 +1,4 @@
 README
-autosetup.py
 setup.py
 /Users/mjrv/Documents/DM_research/class_public-master/python/../python/classy.pyx
 classy.egg-info/PKG-INFO

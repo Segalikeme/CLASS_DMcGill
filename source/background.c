@@ -1012,7 +1012,7 @@ int background_indices(
   if (pba->Omega0_dcdmdr != 0.) {
     pba->has_dcdm = _TRUE_;
     if (pba->Gamma_dcdm != 0.)
-      pba->has_dr = _TRUE_;
+      pba->has_dr = _FALSE_;
   }
 
   if (pba->Omega0_scf != 0.)
@@ -2704,7 +2704,7 @@ int background_derivs(
 
   if ((pba->has_dcdm == _TRUE_) && (pba->has_ddm == _TRUE_)) {
     /** - Compute ddm density \f$ d\rho/dloga = -3\rho + \Gamma/H \rho * <Ei>/E0 \f$ */
-    dy[pba->index_bi_rho_ddm] = -3.*y[pba->index_bi_rho_ddm]+pba->Gamma_dcdm/H*pba->ratio_E*y[pba->index_bi_rho_dcdm];//*average, need to figure out how to add it
+    dy[pba->index_bi_rho_ddm] = -3.*y[pba->index_bi_rho_ddm]+pba->Gamma_dcdm/H*pba->ratio_E*y[pba->index_bi_rho_dcdm];
   }
 
   if ((pba->has_dcdm == _TRUE_) && (pba->has_dr == _TRUE_)) {

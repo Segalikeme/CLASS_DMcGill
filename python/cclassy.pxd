@@ -93,7 +93,9 @@ cdef extern from "class.h":
         double cs2_fld
         double Omega0_ur
         double Omega0_dcdmdr
+        double Omega0_dcdmddm
         double Omega0_dr
+        double Omega0_ddm
         double Omega0_scf
         double Omega0_k
         int bt_size
@@ -187,6 +189,7 @@ cdef extern from "class.h":
         short has_source_delta_idm
         short has_source_delta_idr
         short has_source_delta_dcdm
+        short has_source_delta_ddm
         short has_source_delta_fld
         short has_source_delta_scf
         short has_source_delta_dr
@@ -204,6 +207,7 @@ cdef extern from "class.h":
         short has_source_theta_fld
         short has_source_theta_scf
         short has_source_theta_dr
+        short has_source_theta_ddm
         short has_source_theta_ur
         short has_source_theta_ncdm
         short has_source_phi
@@ -229,6 +233,7 @@ cdef extern from "class.h":
         int index_tp_delta_cdm
         int index_tp_delta_idm
         int index_tp_delta_dcdm
+        int index_tp_delta_ddm
         int index_tp_delta_fld
         int index_tp_delta_scf
         int index_tp_delta_dr
@@ -243,6 +248,7 @@ cdef extern from "class.h":
         int index_tp_theta_b
         int index_tp_theta_cdm
         int index_tp_theta_dcdm
+        int index_tp_theta_ddm
         int index_tp_theta_fld
         int index_tp_theta_scf
         int index_tp_theta_ur
