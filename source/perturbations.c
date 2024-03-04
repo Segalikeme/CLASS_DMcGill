@@ -7550,8 +7550,8 @@ int perturbations_sources(
   double w_fld,dw_over_da_fld,integral_fld;
   int switch_isw = 1;
 
-  double a, a2, f_dr;
-  double a, a2, f_ddm;
+  double a, a2, f_dr, f_ddm;
+  // double a, a2, f_ddm;
 
   double H_T_Nb_prime=0., rho_tot;
   double theta_over_k2,theta_shift;
@@ -9402,9 +9402,9 @@ int perturbations_derivs(double tau,
 
     /** - ----> ddm */
     if ((pba->has_dcdm == _TRUE_)&&(pba->has_ddm == _TRUE_)) {
-      dy[pv->index_pt_delta_ddm] = -(y[pv->index_pt_theta_ddm] + metric_continuity) + a * pba->Gamma_dcdm * pvecback[pba->index_bg_rho_dcdm]/pvecback[pba->index_bg_rho_ddm] * pba->ratio_E * (y[pv->index_pt_delta_dcdm] - y[pv->index_pt_delta_ddm] + metric_euler / k2)
+      dy[pv->index_pt_delta_ddm] = -(y[pv->index_pt_theta_ddm] + metric_continuity) + a * pba->Gamma_dcdm * pvecback[pba->index_bg_rho_dcdm]/pvecback[pba->index_bg_rho_ddm] * pba->ratio_E * (y[pv->index_pt_delta_dcdm] - y[pv->index_pt_delta_ddm] + metric_euler / k2);
 
-      dy[pv->index_pt_theta_ddm] = -y[pv->index_pt_theta_ddm]*(a_prime_over_a + a * pba->Gamma_dcdm * pvecback[pba->index_bg_rho_dcdm]/pvecback[pba->index_bg_rho_ddm] * pba->ratio_E) + metric_euler
+      dy[pv->index_pt_theta_ddm] = -y[pv->index_pt_theta_ddm]*(a_prime_over_a + a * pba->Gamma_dcdm * pvecback[pba->index_bg_rho_dcdm]/pvecback[pba->index_bg_rho_ddm] * pba->ratio_E) + metric_euler;
     }
     /** - ---> dr */
 
