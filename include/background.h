@@ -78,12 +78,15 @@ struct background
   double T_idr;      /**< \f$ T_{idr} \f$: current temperature of interacting dark radiation in Kelvins */
 
   double Omega0_dcdmdr;   /**< \f$ \Omega_{0 dcdm}+\Omega_{0 dr} \f$: decaying cold dark matter (dcdm) decaying to dark radiation (dr) */
-  double Omega0_dcdmddm; /**< \f$ \Omega_{0 dcdm}+\Omega_{0 dr} \f$: decaying cold dark matter (dcdm) decaying to dark matter (ddm) */
   double Omega_ini_dcdm;  /**< \f$ \Omega_{ini,dcdm} \f$: rescaled initial value for dcdm density (see 1407.2418 for definitions) */
   double Gamma_dcdm;      /**< \f$ \Gamma_{dcdm} \f$: decay constant for decaying cold dark matter */
   double tau_dcdm;
-  double ratio_E; /**< \f$ \ratio_{E} \f$: energy ratio decaying cold dark matter into dark matter */
-  double Omega_ini_ddm;
+
+  double Omega0_dtdmddm;   /**< \f$ \Omega_{0 dtdm}+\Omega_{0 ddm} \f$: three body decaying cold dark matter (dtdm) decaying to dark matter (ddm) */
+  double Omega_ini_dtdm;  /**< \f$ \Omega_{ini,dtdm} \f$: rescaled initial value for dtdm density (see 1407.2418 for definitions) */
+  double Gamma_dtdm;      /**< \f$ \Gamma_{dtdm} \f$: decay constant for three body decaying cold dark matter */
+  double tau_dtdm;
+  double ratioE_dtdm;
 
   int N_ncdm;                            /**< Number of distinguishable ncdm species */
   /* the following parameters help to define tabulated ncdm p-s-d passed in file */
@@ -143,8 +146,9 @@ struct background
   int sgnK; /**< K/|K|: -1, 0 or 1 */
   double Neff; /**< so-called "effective neutrino number", computed at earliest time in interpolation table */
   double Omega0_dcdm; /**< \f$ \Omega_{0 dcdm} \f$: decaying cold dark matter */
-  double Omega0_ddm; /**< \f$ \Omega_{0 ddm} \f$: decayed dark matter */
   double Omega0_dr; /**< \f$ \Omega_{0 dr} \f$: decay radiation */
+  double Omega0_dtdm; /**< \f$ \Omega_{0 dcdm} \f$: decaying cold dark matter */
+  double Omega0_ddm; /**< \f$ \Omega_{0 dr} \f$: decay radiation */
   double Omega0_m;  /**< total non-relativistic matter today */
   double Omega0_r;  /**< total ultra-relativistic radiation today */
   double Omega0_de; /**< total dark energy density today, currently defined as 1 - Omega0_m - Omega0_r - Omega0_k */
@@ -179,8 +183,9 @@ struct background
   int index_bg_rho_idr;       /**< density of interacting dark radiation */
   int index_bg_rho_ur;        /**< relativistic neutrinos/relics density */
   int index_bg_rho_dcdm;      /**< dcdm density */
-  int index_bg_rho_ddm;      /**< ddm density */
   int index_bg_rho_dr;        /**< dr density */
+  int index_bg_rho_dtdm;      /**< dtdm density */
+  int index_bg_rho_ddm;        /**< ddm density */
 
   int index_bg_phi_scf;       /**< scalar field value */
   int index_bg_phi_prime_scf; /**< scalar field derivative wrt conformal time */
@@ -263,6 +268,8 @@ struct background
 
   int index_bi_rho_dcdm;/**< {B} dcdm density */
   int index_bi_rho_dr;  /**< {B} dr density */
+  int index_bi_rho_dtdm;/**< {B} dtdm density */
+  int index_bi_rho_ddm;  /**< {B} ddm density */
   int index_bi_rho_fld; /**< {B} fluid density */
   int index_bi_phi_scf;       /**< {B} scalar field value */
   int index_bi_phi_prime_scf; /**< {B} scalar field derivative wrt conformal time */
@@ -272,8 +279,6 @@ struct background
   int index_bi_tau;     /**< {C} conformal time in Mpc */
   int index_bi_D;       /**< {C} scale independent growth factor D(a) for CDM perturbations. */
   int index_bi_D_prime; /**< {C} D satisfies \f$ [D''(\tau)=-aHD'(\tau)+3/2 a^2 \rho_M D(\tau) \f$ */
-
-  int index_bi_rho_ddm;
 
   int bi_B_size;        /**< Number of {B} parameters */
   int bi_size;          /**< Number of {B}+{C} parameters */
@@ -294,7 +299,8 @@ struct background
   short has_idm;       /**< presence of interacting dark matter with photons, baryons, and idr */
   short has_dcdm;      /**< presence of decaying cold dark matter? */
   short has_dr;        /**< presence of relativistic decay radiation? */
-  short has_ddm;        /**< presence of decayed dark matter? */
+  short has_dtdm;      /**< presence of decaying cold dark matter? */
+  short has_ddm;        /**< presence of relativistic decay radiation? */
   short has_scf;       /**< presence of a scalar field? */
   short has_ncdm;      /**< presence of non-cold dark matter? */
   short has_lambda;    /**< presence of cosmological constant? */

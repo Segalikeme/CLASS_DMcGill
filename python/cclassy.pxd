@@ -85,6 +85,7 @@ cdef extern from "class.h":
         double Omega0_cdm
         double Omega0_idm
         double Omega0_dcdm
+        double Omega0_dtdm
         double Omega0_ncdm_tot
         double Omega0_lambda
         double Omega0_fld
@@ -93,7 +94,7 @@ cdef extern from "class.h":
         double cs2_fld
         double Omega0_ur
         double Omega0_dcdmdr
-        double Omega0_dcdmddm
+        double Omega0_dtdmddm
         double Omega0_dr
         double Omega0_ddm
         double Omega0_scf
@@ -189,10 +190,11 @@ cdef extern from "class.h":
         short has_source_delta_idm
         short has_source_delta_idr
         short has_source_delta_dcdm
-        short has_source_delta_ddm
+        short has_source_delta_dtdm
         short has_source_delta_fld
         short has_source_delta_scf
         short has_source_delta_dr
+        short has_source_delta_ddm
         short has_source_delta_ur
         short has_source_delta_ncdm
         short has_source_theta_m
@@ -204,6 +206,7 @@ cdef extern from "class.h":
         short has_source_theta_idm
         short has_source_theta_idr
         short has_source_theta_dcdm
+        short has_source_theta_dtdm
         short has_source_theta_fld
         short has_source_theta_scf
         short has_source_theta_dr
@@ -233,10 +236,11 @@ cdef extern from "class.h":
         int index_tp_delta_cdm
         int index_tp_delta_idm
         int index_tp_delta_dcdm
-        int index_tp_delta_ddm
+        int index_tp_delta_dtdm
         int index_tp_delta_fld
         int index_tp_delta_scf
         int index_tp_delta_dr
+        int index_tp_delta_ddm
         int index_tp_delta_ur
         int index_tp_delta_idr
         int index_tp_delta_ncdm1
@@ -248,13 +252,14 @@ cdef extern from "class.h":
         int index_tp_theta_b
         int index_tp_theta_cdm
         int index_tp_theta_dcdm
-        int index_tp_theta_ddm
+        int index_tp_theta_dtdm
         int index_tp_theta_fld
         int index_tp_theta_scf
         int index_tp_theta_ur
         int index_tp_theta_idr
         int index_tp_theta_idm
         int index_tp_theta_dr
+        int index_tp_theta_ddm
         int index_tp_theta_ncdm1
 
         int index_tp_phi

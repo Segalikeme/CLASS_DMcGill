@@ -459,15 +459,6 @@ int background_functions(
     rho_m += pvecback[pba->index_bg_rho_dcdm];
   }
 
-  /* ddm */
-  if (pba->has_ddm == _TRUE_) {
-    /* Pass value of rho_ddm to output */
-    pvecback[pba->index_bg_rho_ddm] = pvecback_B[pba->index_bi_rho_ddm];
-    rho_tot += pvecback[pba->index_bg_rho_ddm];
-    p_tot += 0.;
-    rho_m += pvecback[pba->index_bg_rho_ddm];
-  }
-
   /* dr */
   if (pba->has_dr == _TRUE_) {
     /* Pass value of rho_dr to output */
@@ -476,6 +467,24 @@ int background_functions(
     p_tot += (1./3.)*pvecback[pba->index_bg_rho_dr];
     dp_dloga += -(4./3.) * pvecback[pba->index_bg_rho_dr];
     rho_r += pvecback[pba->index_bg_rho_dr];
+  }
+
+  /* dtdm */
+  if (pba->has_dtdm == _TRUE_) {
+    /* Pass value of rho_dtdm to output */
+    pvecback[pba->index_bg_rho_dtdm] = pvecback_B[pba->index_bi_rho_dtdm];
+    rho_tot += pvecback[pba->index_bg_rho_dtdm];
+    p_tot += 0.;
+    rho_m += pvecback[pba->index_bg_rho_dtdm];
+  }
+
+  /* ddm */
+  if (pba->has_ddm == _TRUE_) {
+    /* Pass value of rho_dr to output */
+    pvecback[pba->index_bg_rho_ddm] = pvecback_B[pba->index_bi_rho_ddm];
+    rho_tot += pvecback[pba->index_bg_rho_ddm];
+    p_tot += 0.;
+    rho_r += pvecback[pba->index_bg_rho_ddm];
   }
 
   /* Scalar field */
@@ -705,6 +714,8 @@ int background_w_fld(
     if (pba->has_cdm == _TRUE_) Omega_m += pba->Omega0_cdm;
     if (pba->has_idm == _TRUE_) Omega_m += pba->Omega0_idm;
     if (pba->has_dcdm == _TRUE_)
+      class_stop(pba->error_message,"Early Dark Energy not compatible with decaying Dark Matter because we omitted to code the calculation of a_eq in that case, but it would not be difficult to add it if necessary, should be a matter of 5 minutes");
+    if (pba->has_dtdm == _TRUE_)
       class_stop(pba->error_message,"Early Dark Energy not compatible with decaying Dark Matter because we omitted to code the calculation of a_eq in that case, but it would not be difficult to add it if necessary, should be a matter of 5 minutes");
     a_eq = Omega_r/Omega_m; // assumes a flat universe with a=1 today
 
@@ -984,8 +995,9 @@ int background_indices(
   pba->has_idm = _FALSE_;
   pba->has_ncdm = _FALSE_;
   pba->has_dcdm = _FALSE_;
-  pba->has_ddm = _FALSE_;
   pba->has_dr = _FALSE_;
+  pba->has_dtdm = _FALSE_;
+  pba->has_ddm = _FALSE_;
   pba->has_scf = _FALSE_;
   pba->has_lambda = _FALSE_;
   pba->has_fld = _FALSE_;
@@ -1003,16 +1015,16 @@ int background_indices(
   if (pba->Omega0_ncdm_tot != 0.)
     pba->has_ncdm = _TRUE_;
 
-  if (pba->Omega0_dcdmddm != 0.) {
-    pba->has_dcdm = _TRUE_;
-    if (pba->Gamma_dcdm != 0.)
-      pba->has_ddm = _TRUE_;
-  }
-
   if (pba->Omega0_dcdmdr != 0.) {
     pba->has_dcdm = _TRUE_;
     if (pba->Gamma_dcdm != 0.)
-      pba->has_dr = _FALSE_;
+      pba->has_dr = _TRUE_;
+  }
+
+  if (pba->Omega0_dtdmddm != 0.) {
+    pba->has_dtdm = _TRUE_;
+    if (pba->Gamma_dtdm != 0.)
+      pba->has_ddm = _TRUE_;
   }
 
   if (pba->Omega0_scf != 0.)
@@ -1072,11 +1084,14 @@ int background_indices(
   /* - index for dcdm */
   class_define_index(pba->index_bg_rho_dcdm,pba->has_dcdm,index_bg,1);
 
-  /* - index for ddm */
-  class_define_index(pba->index_bg_rho_ddm,pba->has_ddm,index_bg,1);
-
   /* - index for dr */
   class_define_index(pba->index_bg_rho_dr,pba->has_dr,index_bg,1);
+
+  /* - index for dtdm */
+  class_define_index(pba->index_bg_rho_dtdm,pba->has_dtdm,index_bg,1);
+
+  /* - index for ddm */
+  class_define_index(pba->index_bg_rho_ddm,pba->has_ddm,index_bg,1);
 
   /* - indices for scalar field */
   class_define_index(pba->index_bg_phi_scf,pba->has_scf,index_bg,1);
@@ -1174,11 +1189,14 @@ int background_indices(
   /* -> energy density in DCDM */
   class_define_index(pba->index_bi_rho_dcdm,pba->has_dcdm,index_bi,1);
 
-  /* -> energy density in DDM */
-  class_define_index(pba->index_bi_rho_ddm,pba->has_ddm,index_bi,1);
-
   /* -> energy density in DR */
   class_define_index(pba->index_bi_rho_dr,pba->has_dr,index_bi,1);
+
+  /* -> energy density in DTDM */
+  class_define_index(pba->index_bi_rho_dtdm,pba->has_dtdm,index_bi,1);
+
+  /* -> energy density in DDM */
+  class_define_index(pba->index_bi_rho_ddm,pba->has_ddm,index_bi,1);
 
   /* -> energy density in fluid */
   class_define_index(pba->index_bi_rho_fld,pba->has_fld,index_bi,1);
@@ -1464,9 +1482,8 @@ int background_ncdm_init(
                                pba->error_message),
                  pba->error_message,
                  pba->error_message);
-      pba->q_ncdm[k]=realloc(pba->q_ncdm[k],pba->q_size_ncdm[k]*sizeof(double));
-      pba->w_ncdm[k]=realloc(pba->w_ncdm[k],pba->q_size_ncdm[k]*sizeof(double));
-
+      class_realloc(pba->q_ncdm[k],pba->q_size_ncdm[k]*sizeof(double), pba->error_message);
+      class_realloc(pba->w_ncdm[k],pba->q_size_ncdm[k]*sizeof(double), pba->error_message);
 
       if (pba->background_verbose > 0) {
         printf("ncdm species i=%d sampled with %d points for purpose of perturbation integration\n",
@@ -1492,8 +1509,8 @@ int background_ncdm_init(
                  pba->error_message,
                  pba->error_message);
 
-      pba->q_ncdm_bg[k]=realloc(pba->q_ncdm_bg[k],pba->q_size_ncdm_bg[k]*sizeof(double));
-      pba->w_ncdm_bg[k]=realloc(pba->w_ncdm_bg[k],pba->q_size_ncdm_bg[k]*sizeof(double));
+      class_realloc(pba->q_ncdm_bg[k],pba->q_size_ncdm_bg[k]*sizeof(double), pba->error_message);
+      class_realloc(pba->w_ncdm_bg[k],pba->q_size_ncdm_bg[k]*sizeof(double), pba->error_message);
 
       /** - in verbose mode, inform user of number of sampled momenta
           for background quantities */
@@ -1908,9 +1925,9 @@ int background_solve(
   double conformal_distance;
 
   /* evolvers */
-  extern int evolver_rk();
-  extern int evolver_ndf15();
-  int (*generic_evolver)() = evolver_ndf15;
+  extern int evolver_rk(EVOLVER_PROTOTYPE);
+  extern int evolver_ndf15(EVOLVER_PROTOTYPE);
+  int (*generic_evolver)(EVOLVER_PROTOTYPE) = evolver_ndf15;
 
   /* initial and final loga values */
   double loga_ini, loga_final;
@@ -2007,11 +2024,15 @@ int background_solve(
   if (pba->has_dcdm == _TRUE_) {
     pba->Omega0_dcdm = pvecback_integration[pba->index_bi_rho_dcdm]/pba->H0/pba->H0;
   }
-  if (pba->has_ddm == _TRUE_) {
-    pba->Omega0_ddm = pvecback_integration[pba->index_bi_rho_ddm]/pba->H0/pba->H0;
-  }
   if (pba->has_dr == _TRUE_) {
     pba->Omega0_dr = pvecback_integration[pba->index_bi_rho_dr]/pba->H0/pba->H0;
+  }
+  /* -> contribution of three body decaying dark matter and decayed dark matter to the critical density today: */
+  if (pba->has_dtdm == _TRUE_) {
+    pba->Omega0_dtdm = pvecback_integration[pba->index_bi_rho_dtdm]/pba->H0/pba->H0;
+  }
+  if (pba->has_ddm == _TRUE_) {
+    pba->Omega0_ddm = pvecback_integration[pba->index_bi_rho_ddm]/pba->H0/pba->H0;
   }
   /* -> scale-invariant growth rate today */
   D_today = pvecback_integration[pba->index_bi_D];
@@ -2094,31 +2115,13 @@ int background_solve(
              pba->Omega0_dr+pba->Omega0_dcdm,pba->Omega0_dcdmdr);
       printf("     -> Omega_ini_dcdm/Omega_b = %f\n",pba->Omega_ini_dcdm/pba->Omega0_b);
     }
-    if (pba->has_scf == _TRUE_) {
-      printf("    Scalar field details:\n");
-      printf("     -> Omega_scf = %g, wished %g\n",
-             pba->background_table[(pba->bt_size-1)*pba->bg_size+pba->index_bg_rho_scf]/pba->background_table[(pba->bt_size-1)*pba->bg_size+pba->index_bg_rho_crit], pba->Omega0_scf);
-      if (pba->has_lambda == _TRUE_) {
-        printf("     -> Omega_Lambda = %g, wished %g\n",
-               pba->background_table[(pba->bt_size-1)*pba->bg_size+pba->index_bg_rho_lambda]/pba->background_table[(pba->bt_size-1)*pba->bg_size+pba->index_bg_rho_crit], pba->Omega0_lambda);
-      }
-      printf("     -> parameters: [lambda, alpha, A, B] = \n");
-      printf("                    [");
-      for (index_scf=0; index_scf<pba->scf_parameters_size-1; index_scf++) {
-        printf("%.3f, ",pba->scf_parameters[index_scf]);
-      }
-      printf("%.3f]\n",pba->scf_parameters[pba->scf_parameters_size-1]);
-    }
-  }
-
-  if (pba->background_verbose > 2) {
-    if ((pba->has_dcdm == _TRUE_)&&(pba->has_ddm == _TRUE_)) {
-      printf("    Decaying Cold Dark Matter details: (DCDM --> DDM)\n");
-      printf("     -> Omega0_dcdm = %f\n",pba->Omega0_dcdm);
+    if ((pba->has_dtdm == _TRUE_)&&(pba->has_ddm == _TRUE_)) {
+      printf("    Decaying Cold Dark Matter details: (DTDM --> DDM)\n");
+      printf("     -> Omega0_dtdm = %f\n",pba->Omega0_dtdm);
       printf("     -> Omega0_ddm = %f\n",pba->Omega0_ddm);
-      printf("     -> Omega0_ddm+Omega0_dcdm = %f, input value = %f\n",
-             pba->Omega0_ddm+pba->Omega0_dcdm,pba->Omega0_dcdmddm);
-      printf("     -> Omega_ini_dcdm/Omega_b = %f\n",pba->Omega_ini_dcdm/pba->Omega0_b);
+      printf("     -> Omega0_ddm+Omega0_dtdm = %f, input value = %f\n",
+             pba->Omega0_ddm+pba->Omega0_dtdm,pba->Omega0_dtdmddm);
+      printf("     -> Omega_ini_dtdm/Omega_b = %f\n",pba->Omega_ini_dtdm/pba->Omega0_b);
     }
     if (pba->has_scf == _TRUE_) {
       printf("    Scalar field details:\n");
@@ -2150,6 +2153,8 @@ int background_solve(
     pba->Omega0_nfsm += pba->Omega0_idm;
   if (pba->has_dcdm == _TRUE_)
     pba->Omega0_nfsm += pba->Omega0_dcdm;
+  if (pba->has_dtdm == _TRUE_)
+    pba->Omega0_nfsm += pba->Omega0_dtdm;
   for (n_ncdm=0;n_ncdm<pba->N_ncdm; n_ncdm++) {
     /* here we define non-free-streaming matter as: any non-relatistic species with a dimensionless ratio m/T bigger than a threshold ppr->M_nfsm_threshold; if this threshold is of the order of 10^4, this corresponds to the condition "becoming non-relativistic during radiation domination". Beware: this definition won't work in the case in which the user passes a customised p.s.d. for ncdm, such that M_ncdm is not defined.  */
     if (pba->M_ncdm[n_ncdm] > ppr->M_nfsm_threshold) {
@@ -2266,14 +2271,6 @@ int background_initial_conditions(
       printf("Density is %g. Omega_ini=%g\n",pvecback_integration[pba->index_bi_rho_dcdm],pba->Omega_ini_dcdm);
   }
 
-  if (pba->has_ddm == _TRUE_) {
-    /* Remember that the critical density today in CLASS conventions is H0^2 */
-    pvecback_integration[pba->index_bi_rho_ddm] =
-      pba->Omega_ini_ddm*pba->H0*pba->H0*pow(a,-3);
-    if (pba->background_verbose > 3)
-      printf("Density is %g. Omega_ini=%g\n",pvecback_integration[pba->index_bi_rho_ddm],pba->Omega_ini_ddm);
-  }
-
   if (pba->has_dr == _TRUE_) {
     if (pba->has_dcdm == _TRUE_) {
       /**  - f is the critical density fraction of DR. The exact solution is:
@@ -2290,6 +2287,20 @@ int background_initial_conditions(
     else{
       /** There is also a space reserved for a future case where dr is not sourced by dcdm */
       pvecback_integration[pba->index_bi_rho_dr] = 0.0;
+    }
+  }
+
+  if (pba->has_dtdm == _TRUE_) {
+    /* Remember that the critical density today in CLASS conventions is H0^2 */
+    pvecback_integration[pba->index_bi_rho_dtdm] =
+      pba->Omega_ini_dtdm*pba->H0*pba->H0*pow(a,-3);
+    if (pba->background_verbose > 3)
+      printf("Density is %g. Omega_ini=%g\n",pvecback_integration[pba->index_bi_rho_dtdm],pba->Omega_ini_dtdm);
+  }
+
+  if (pba->has_ddm == _TRUE_) {
+    if (pba->has_dtdm == _TRUE_) {
+      pvecback_integration[pba->index_bi_rho_ddm] = 0*pba->H0*pba->H0/pow(a,3); /* have to check equations */
     }
   }
 
@@ -2499,9 +2510,9 @@ int background_output_titles(
   class_store_columntitle(titles,"(.)rho_idm",pba->has_idm);
   if (pba->has_ncdm == _TRUE_) {
     for (n=0; n<pba->N_ncdm; n++) {
-      sprintf(tmp,"(.)rho_ncdm[%d]",n);
+      class_sprintf(tmp,"(.)rho_ncdm[%d]",n);
       class_store_columntitle(titles,tmp,_TRUE_);
-      sprintf(tmp,"(.)p_ncdm[%d]",n);
+      class_sprintf(tmp,"(.)p_ncdm[%d]",n);
       class_store_columntitle(titles,tmp,_TRUE_);
     }
   }
@@ -2512,8 +2523,9 @@ int background_output_titles(
   class_store_columntitle(titles,"(.)rho_idr",pba->has_idr);
   class_store_columntitle(titles,"(.)rho_crit",_TRUE_);
   class_store_columntitle(titles,"(.)rho_dcdm",pba->has_dcdm);
-  class_store_columntitle(titles,"(.)rho_ddm",pba->has_ddm);
   class_store_columntitle(titles,"(.)rho_dr",pba->has_dr);
+  class_store_columntitle(titles,"(.)rho_dtdm",pba->has_dtdm);
+  class_store_columntitle(titles,"(.)rho_ddm",pba->has_ddm);
 
   class_store_columntitle(titles,"(.)rho_scf",pba->has_scf);
   class_store_columntitle(titles,"(.)p_scf",pba->has_scf);
@@ -2586,8 +2598,9 @@ int background_output_data(
     class_store_double(dataptr,pvecback[pba->index_bg_rho_idr],pba->has_idr,storeidx);
     class_store_double(dataptr,pvecback[pba->index_bg_rho_crit],_TRUE_,storeidx);
     class_store_double(dataptr,pvecback[pba->index_bg_rho_dcdm],pba->has_dcdm,storeidx);
-    class_store_double(dataptr,pvecback[pba->index_bg_rho_ddm],pba->has_ddm,storeidx);
     class_store_double(dataptr,pvecback[pba->index_bg_rho_dr],pba->has_dr,storeidx);
+    class_store_double(dataptr,pvecback[pba->index_bg_rho_dtdm],pba->has_dtdm,storeidx);
+    class_store_double(dataptr,pvecback[pba->index_bg_rho_ddm],pba->has_ddm,storeidx);
 
     class_store_double(dataptr,pvecback[pba->index_bg_rho_scf],pba->has_scf,storeidx);
     class_store_double(dataptr,pvecback[pba->index_bg_p_scf],pba->has_scf,storeidx);
@@ -2702,14 +2715,19 @@ int background_derivs(
     dy[pba->index_bi_rho_dcdm] = -3.*y[pba->index_bi_rho_dcdm] - pba->Gamma_dcdm/H*y[pba->index_bi_rho_dcdm];
   }
 
-  if ((pba->has_dcdm == _TRUE_) && (pba->has_ddm == _TRUE_)) {
-    /** - Compute ddm density \f$ d\rho/dloga = -3\rho + \Gamma/H \rho * <Ei>/E0 \f$ */
-    dy[pba->index_bi_rho_ddm] = -3.*y[pba->index_bi_rho_ddm]+pba->Gamma_dcdm/H*pba->ratio_E*y[pba->index_bi_rho_dcdm];
-  }
-
   if ((pba->has_dcdm == _TRUE_) && (pba->has_dr == _TRUE_)) {
     /** - Compute dr density \f$ d\rho/dloga = -4\rho - \Gamma/H \rho \f$ */
     dy[pba->index_bi_rho_dr] = -4.*y[pba->index_bi_rho_dr]+pba->Gamma_dcdm/H*y[pba->index_bi_rho_dcdm];
+  }
+
+  if (pba->has_dtdm == _TRUE_) {
+    /** - compute dtdm density \f$ d\rho/dloga = -3 \rho - \Gamma/H \rho \f$*/
+    dy[pba->index_bi_rho_dtdm] = -3.*y[pba->index_bi_rho_dtdm] - pba->Gamma_dtdm/H*y[pba->index_bi_rho_dtdm];
+  }
+
+  if ((pba->has_dtdm == _TRUE_) && (pba->has_ddm == _TRUE_)) {
+    /** - Compute ddm density \f$ d\rho/dloga = -3\rho - \Gamma/H \rho \f$ */
+    dy[pba->index_bi_rho_ddm] = -3.*y[pba->index_bi_rho_dr]+pba->Gamma_dtdm/H*y[pba->index_bi_rho_dtdm] * pba->ratioE_dtdm;
   }
 
   if (pba->has_fld == _TRUE_) {
@@ -2873,7 +2891,10 @@ int background_output_budget(
       class_print_species("Decaying Cold Dark Matter",dcdm);
       budget_matter+=pba->Omega0_dcdm;
     }
-
+    if (pba->has_dtdm == _TRUE_) {
+      class_print_species("Three body decaying Cold Dark Matter",dtdm);
+      budget_matter+=pba->Omega0_dtdm;
+    }
     if (pba->has_ddm == _TRUE_) {
       class_print_species("Decayed Cold Dark Matter",ddm);
       budget_matter+=pba->Omega0_ddm;

@@ -150,6 +150,8 @@ struct perturbations
   int l_lss_max; /**< maximum l value for LSS \f$ C_l \f$'s (density and lensing potential in  bins) */
   double k_max_for_pk; /**< maximum value of k in 1/Mpc required for the output of P(k,z) and T(k,z) */
 
+  short want_lcmb_full_limber; /**< In general, do we want to use the full Limber scheme introduced in v3.2.2? With this full Limber scheme, the calculation of the CMB lensing potential spectrum C_l^phiphi for l > ppr->l_switch_limber is based on a new integration scheme. Compared to the previous scheme, which can be recovered by switching this parameter to _FALSE_, the new scheme uses a larger k_max and a coarser k-grid (or q-grid) than the CMB transfer function. The new scheme is used by default, because the old one is inaccurate at large l due to the too small k_max. */
+
   int selection_num;                            /**< number of selection functions
                                                    (i.e. bins) for matter density \f$ C_l \f$'s */
   enum selection_type selection;                /**< type of selection functions */
@@ -240,10 +242,11 @@ struct perturbations
   short has_source_delta_idm;  /**< do we need source for delta of interacting dark matter */
   short has_source_delta_idr;  /**< do we need source for delta of interacting dark radiation? */
   short has_source_delta_dcdm; /**< do we need source for delta of DCDM? */
+  short has_source_delta_dtdm; /**< do we need source for delta of DTDM? */
   short has_source_delta_fld;  /**< do we need source for delta of dark energy? */
   short has_source_delta_scf;  /**< do we need source for delta from scalar field? */
   short has_source_delta_dr;   /**< do we need source for delta of decay radiation? */
-  short has_source_delta_ddm;   /**< do we need source for delta of decayed dark matter*/
+  short has_source_delta_ddm;   /**< do we need source for delta of decayed dark matter?*/
   short has_source_delta_ur;   /**< do we need source for delta of ultra-relativistic neutrinos/relics? */
   short has_source_delta_ncdm; /**< do we need source for delta of all non-cold dark matter species (e.g. massive neutrinos)? */
   short has_source_theta_m;    /**< do we need source for theta of total matter? */
@@ -255,6 +258,7 @@ struct perturbations
   short has_source_theta_idm;  /**< do we need source for theta of interacting dark matter */
   short has_source_theta_idr;  /**< do we need source for theta of interacting dark radiation? */
   short has_source_theta_dcdm; /**< do we need source for theta of DCDM? */
+  short has_source_theta_dtdm; /**< do we need source for theta of DTDM? */
   short has_source_theta_fld;  /**< do we need source for theta of dark energy? */
   short has_source_theta_scf;  /**< do we need source for theta of scalar field? */
   short has_source_theta_dr;   /**< do we need source for theta of ultra-relativistic neutrinos/relics? */
@@ -289,10 +293,11 @@ struct perturbations
   int index_tp_delta_cdm; /**< index value for delta of cold dark matter */
   int index_tp_delta_idm; /**< index value for delta of interacting dark matter */
   int index_tp_delta_dcdm;/**< index value for delta of DCDM */
+  int index_tp_delta_dtdm;/**< index value for delta of DTDM */
   int index_tp_delta_fld;  /**< index value for delta of dark energy */
   int index_tp_delta_scf;  /**< index value for delta of scalar field */
-  int index_tp_delta_ddm; /**< index value for delta of decayed dark matter */
   int index_tp_delta_dr; /**< index value for delta of decay radiation */
+  int index_tp_delta_ddm; /**< index value for delta of decayed dark matter */
   int index_tp_delta_ur; /**< index value for delta of ultra-relativistic neutrinos/relics */
   int index_tp_delta_idr; /**< index value for delta of interacting dark radiation */
   int index_tp_delta_ncdm1; /**< index value for delta of first non-cold dark matter species (e.g. massive neutrinos) */
@@ -306,13 +311,14 @@ struct perturbations
   int index_tp_theta_b;     /**< index value for theta of baryons */
   int index_tp_theta_cdm;   /**< index value for theta of cold dark matter */
   int index_tp_theta_dcdm;  /**< index value for theta of DCDM */
+  int index_tp_theta_dtdm;  /**< index value for theta of DTDM */
   int index_tp_theta_fld;   /**< index value for theta of dark energy */
   int index_tp_theta_scf;   /**< index value for theta of scalar field */
   int index_tp_theta_ur;    /**< index value for theta of ultra-relativistic neutrinos/relics */
   int index_tp_theta_idr;   /**< index value for theta of interacting dark radiation */
   int index_tp_theta_idm;   /**< index value for theta of interacting dark matter */
   int index_tp_theta_dr;    /**< index value for F1 of decay radiation */
-  int index_tp_theta_ddm;    /**< index value for theta of decayed dark matter */
+  int index_tp_theta_ddm;    /**< index value for theta decayed dark matter */
   int index_tp_theta_ncdm1; /**< index value for theta of first non-cold dark matter species (e.g. massive neutrinos) */
 
   int index_tp_phi;          /**< index value for metric fluctuation phi */
@@ -473,6 +479,8 @@ struct perturbations_vector
   int index_pt_theta_idm; /**< idm velocity */
   int index_pt_delta_dcdm; /**< dcdm density */
   int index_pt_theta_dcdm; /**< dcdm velocity */
+  int index_pt_delta_dtdm; /**< dtdm density */
+  int index_pt_theta_dtdm; /**< dtdm velocity */
   int index_pt_delta_ddm; /**< ddm density */
   int index_pt_theta_ddm; /**< ddm velocity */
   int index_pt_delta_fld;  /**< dark energy density in true fluid case */

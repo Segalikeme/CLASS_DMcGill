@@ -894,7 +894,7 @@ cdef class Class:
                     pk_cb[index_k,index_z,index_mu] = self.pk_cb_lin(k[index_k,index_z,index_mu],z[index_z])
         return pk_cb
 
-    def get_pk_all(self, k, z, nonlinear = True, cdmbar = False, z_axis_in_k_arr = 0):
+    def get_pk_all(self, k, z, nonlinear = True, cdmbar = False, z_axis_in_k_arr = 0, interpolation_kind='cubic'):
         """ General function to get the P(k,z) for ARBITRARY shapes of k,z
             Additionally, it includes the functionality of selecting wether to use the non-linear parts or not,
             and wether to use the cdm baryon power spectrum only
@@ -929,7 +929,7 @@ cdef class Class:
 
         # Only get the nonlinear function where the nonlinear treatment is possible
         def _islinear(z):
-          if z > z_max_nonlinear:
+          if z > z_max_nonlinear or (self.fo.method == nl_none):
             return True
           else:
             return False
@@ -937,8 +937,8 @@ cdef class Class:
         # A simple wrapper for writing the P(k) in the given location and interpolating it
         def _interpolate_pk_at_z(karr,z):
           _write_pk(z,_islinear(z),ispkcb)
-          interp_func = interp1d(k_out,pk_out,kind='linear',copy=True)
-          return interp_func(karr)
+          interp_func = interp1d(k_out,np.log(pk_out),kind=interpolation_kind,copy=True)
+          return np.exp(interp_func(karr))
 
         # 2) Check if z array, or z value
         if not isinstance(z,(list,np.ndarray)):
@@ -2901,18 +2901,21 @@ make        nonlinear_scale_cb(z, z_size)
         if self.pt.has_source_delta_dcdm:
             indices.append(self.pt.index_tp_delta_dcdm)
             names.append("delta_dcdm")
+        if self.pt.has_source_delta_dtdm:
+            indices.append(self.pt.index_tp_delta_dtdm)
+            names.append("delta_dtdm")
         if self.pt.has_source_delta_fld:
             indices.append(self.pt.index_tp_delta_fld)
             names.append("delta_fld")
         if self.pt.has_source_delta_scf:
             indices.append(self.pt.index_tp_delta_scf)
             names.append("delta_scf")
-        if self.pt.has_source_delta_ddm:
-            indices.append(self.pt.index_tp_delta_ddm)
-            names.append("delta_ddm")
         if self.pt.has_source_delta_dr:
             indices.append(self.pt.index_tp_delta_dr)
             names.append("delta_dr")
+        if self.pt.has_source_delta_ddm:
+            indices.append(self.pt.index_tp_delta_ddm)
+            names.append("delta_ddm")
         if self.pt.has_source_delta_ur:
             indices.append(self.pt.index_tp_delta_ur)
             names.append("delta_ur")
@@ -2947,18 +2950,21 @@ make        nonlinear_scale_cb(z, z_size)
         if self.pt.has_source_theta_dcdm:
             indices.append(self.pt.index_tp_theta_dcdm)
             names.append("theta_dcdm")
+        if self.pt.has_source_theta_dtdm:
+            indices.append(self.pt.index_tp_theta_dtdm)
+            names.append("theta_dtdm")
         if self.pt.has_source_theta_fld:
             indices.append(self.pt.index_tp_theta_fld)
             names.append("theta_fld")
         if self.pt.has_source_theta_scf:
             indices.append(self.pt.index_tp_theta_scf)
             names.append("theta_scf")
-        if self.pt.has_source_theta_ddm:
-            indices.append(self.pt.index_tp_theta_ddm)
-            names.append("theta_ddm")
         if self.pt.has_source_theta_dr:
             indices.append(self.pt.index_tp_theta_dr)
             names.append("theta_dr")
+        if self.pt.has_source_theta_ddm:
+            indices.append(self.pt.index_tp_theta_ddm)
+            names.append("theta_ddm")
         if self.pt.has_source_theta_ur:
             indices.append(self.pt.index_tp_theta_ur)
             names.append("theta_ur")
