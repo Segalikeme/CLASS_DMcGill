@@ -1958,7 +1958,7 @@ int background_solve(
   loga_final = 0.; // with our conventions, loga is in fact log(a/a_0); we integrate until today, when log(a/a_0) = 0
   pba->bt_size = ppr->background_Nloga;
 
-  /** - allocate background tables */
+  /** - allocate background tables */  
   class_alloc(pba->tau_table,pba->bt_size * sizeof(double),pba->error_message);
   class_alloc(pba->z_table,pba->bt_size * sizeof(double),pba->error_message);
   class_alloc(pba->loga_table,pba->bt_size * sizeof(double),pba->error_message);
@@ -2014,6 +2014,7 @@ int background_solve(
                              pba->error_message),
              pba->error_message,
              pba->error_message);
+
 
   /** - recover some quantities today */
   /* -> age in Gyears */
@@ -2726,8 +2727,9 @@ int background_derivs(
   }
 
   if ((pba->has_dtdm == _TRUE_) && (pba->has_ddm == _TRUE_)) {
-    /** - Compute ddm density \f$ d\rho/dloga = -3\rho - \Gamma/H \rho \f$ */
-    dy[pba->index_bi_rho_ddm] = -3.*y[pba->index_bi_rho_dr]+pba->Gamma_dtdm/H*y[pba->index_bi_rho_dtdm] * pba->ratioE_dtdm;
+    /** - Compute ddm density \f$ d\rho/dloga = -3\rho - \Gamma/H \rho \f$ */    
+    // dy[pba->index_bi_rho_ddm] = -3.*y[pba->index_bi_rho_dr]+pba->Gamma_dtdm/H*y[pba->index_bi_rho_dtdm] * pba->ratioE_dtdm;
+    dy[pba->index_bi_rho_ddm] = -3.*y[pba->index_bi_rho_ddm]+pba->Gamma_dtdm/H*y[pba->index_bi_rho_dtdm] * pba->ratioE_dtdm;
   }
 
   if (pba->has_fld == _TRUE_) {

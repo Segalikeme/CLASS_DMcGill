@@ -1468,7 +1468,8 @@ int input_try_unknown_parameters(double * unknown_parameter,
       printf("Stage 1: background\n");
     ba.background_verbose = 0;
     class_call_except(background_init(&pr,&ba), ba.error_message, errmsg, background_free_input(&ba);thermodynamics_free_input(&th);perturbations_free_input(&pt););
-  }
+    if (input_verbose>2)
+      printf("Stage 1: background...done\n");  }
 
   if (pfzw->required_computation_stage >= cs_thermodynamics){
     if (input_verbose>2)

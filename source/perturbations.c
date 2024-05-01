@@ -3972,7 +3972,7 @@ int perturbations_vector_init(
     /* dtdm */
 
     class_define_index(ppv->index_pt_delta_dtdm,pba->has_dtdm,index_pt,1); /* dtdm density */
-    class_define_index(ppv->index_pt_theta_dcdm,pba->has_dtdm,index_pt,1); /* dtdm velocity */
+    class_define_index(ppv->index_pt_theta_dtdm,pba->has_dtdm,index_pt,1); /* dtdm velocity */
 
     /* ddm */
 
@@ -7028,7 +7028,7 @@ int perturbations_total_stress_energy(
     }
 
     /* dtdm contribution */
-    if (pba->has_dtdm == _TRUE_) {
+    if (pba->has_dtdm == _TRUE_) {      
       ppw->delta_rho += ppw->pvecback[pba->index_bg_rho_dtdm]*y[ppw->pv->index_pt_delta_dtdm];
       ppw->rho_plus_p_theta += ppw->pvecback[pba->index_bg_rho_dtdm]*y[ppw->pv->index_pt_theta_dtdm];
 
